@@ -9,7 +9,7 @@ import static com.codeborne.selenide.Selenide.open;
 
 public class FormTests extends test.TestBase {
     @Test
-    void registrationFormRequired() {
+    void registrationFormRequired12() {
         open("/automation-practice-form");
         $("#firstName").setValue("Mike");
         $("#lastName").setValue("Wazowski");
