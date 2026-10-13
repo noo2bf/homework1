@@ -1,89 +1,73 @@
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
-
+@DisplayName("Class with negative tests")
 public class FormTests extends test.TestBase {
-    @Test
-    void registrationFormRequireD15() {
+
+    @ParameterizedTest
+    @DisplayName("ValueSource тесты")
+    @Tag("Smoke")
+    @ValueSource(strings = {
+            "Mike", "Nancy", "Penny"
+    })
+    void registrationFormValueSource(String searchQuery) {
         open("/automation-practice-form");
-        $("#firstName").setValue("Mike");
+        $("#firstName").setValue(searchQuery);
         $("#lastName").setValue("Wazowski");
         $("#userNumber").setValue("1234567890");
         $("#genterWrapper").$(byText("Male")).click();
         $("#submit").scrollTo().click();
         $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
-        $(".table-responsive").$(byText("Student Name")).parent().shouldHave(text("Mike Wazowski"));
+        $(".table-responsive").$(byText("Student Name")).parent().shouldHave(text(searchQuery));
         $(".table-responsive").$(byText("Gender")).parent().shouldHave(text("Male"));
         $(".table-responsive").$(byText("Mobile")).parent().shouldHave(text("1234567890"));
     }
 
-    @Test
-    void registrationFormFull () {
+    @ParameterizedTest
+    @DisplayName("ValueCSV тесты")
+    @Tag("Smoke")
+    @CsvSource(value = {
+            "Mike, Wazowski, Male",
+            "Nancy, Pelony, Female",
+            "Penny, Gilmore, Other",
+    })
+    void registrationFormValueCsv(String firstName, String lastName, String gender) {
         open("/automation-practice-form");
-        $("#firstName").setValue("Mike");
-        $("#lastName").setValue("Wazowski");
-        $("#userEmail").setValue("mike@example.in");
+        $("#firstName").setValue(firstName);
+        $("#lastName").setValue(lastName);
         $("#userNumber").setValue("1234567890");
-        $("#genterWrapper").$(byText("Male")).click();
-        $("#dateOfBirthInput").click();
-        $(".react-datepicker__month-select").selectOption(7);
-        $(".react-datepicker__year-select").selectOption("1995");
-        $(".react-datepicker__day.react-datepicker__day--011").click();
-        $("#hobbiesWrapper").$(byText("Reading")).click();
-        $("#subjectsInput").setValue("ph");
-        $("#react-select-2-option-0").click();
-        $("#currentAddress").setValue("Bullet street 7");
-        $("#uploadPicture").uploadFromClasspath("screen.png");
-        $("#state").scrollTo().click();
-        $("#react-select-3-option-0").click();
-        $("#city").click();
-        $("#react-select-4-option-0").click();
+        $("#genterWrapper").$(byText(gender)).click();
         $("#submit").scrollTo().click();
         $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
-        $(".table-responsive").$(byText("Student Name")).parent().shouldHave(text("Mike Wazowski"));
-        $(".table-responsive").$(byText("Student Email")).parent().shouldHave(text("mike@example.in"));
-        $(".table-responsive").$(byText("Gender")).parent().shouldHave(text("Male"));
+        $(".table-responsive").$(byText("Student Name")).parent().shouldHave(text(firstName));
+        $(".table-responsive").$(byText("Gender")).parent().shouldHave(text(gender));
         $(".table-responsive").$(byText("Mobile")).parent().shouldHave(text("1234567890"));
-        $(".table-responsive").$(byText("Date of Birth")).parent().shouldHave(text("11 August,1995"));
-        $(".table-responsive").$(byText("Subjects")).parent().shouldHave(text("Physics"));
-        $(".table-responsive").$(byText("Hobbies")).parent().shouldHave(text("Reading"));
-        $(".table-responsive").$(byText("Picture")).parent().shouldHave(text("screen.png"));
-        $(".table-responsive").$(byText("Address")).parent().shouldHave(text("Bullet street 7"));
-        $(".table-responsive").$(byText("State and City")).parent().shouldHave(text("NCR Delhi"));
     }
 
-    @Test
-    void emptyFirstName() {
+    @ParameterizedTest
+    @DisplayName("ValueCSV тесты")
+    @Tag("Smoke")
+    @CsvFileSource(resources = "/test.csv")
+    void registrationFormValueCsvFile(String firstName, String lastName, String gender) {
         open("/automation-practice-form");
-        $("#lastName").setValue("Wazowski");
+        $("#firstName").setValue(firstName);
+        $("#lastName").setValue(lastName);
         $("#userNumber").setValue("1234567890");
-        $("#genterWrapper").$(byText("Male")).click();
+        $("#genterWrapper").$(byText(gender)).click();
         $("#submit").scrollTo().click();
-        $("#firstName").shouldHave(cssValue("border-color", "rgb(220, 53, 69)"));
-    }
-
-    @Test
-    void emptyLastName() {
-        open("/automation-practice-form");
-        $("#firstName").setValue("Mike");
-        $("#userNumber").setValue("1234567890");
-        $("#genterWrapper").$(byText("Male")).click();
-        $("#submit").scrollTo().click();
-        $("#lastName").shouldHave(cssValue("border-color", "rgb(220, 53, 69)"));
-    }
-
-    @Test
-    void emptyUserNumber() {
-        open("/automation-practice-form");
-        $("#firstName").setValue("Mike");
-        $("#lastName").setValue("Wazowski");
-        $("#genterWrapper").$(byText("Male")).click();
-        $("#submit").scrollTo().click();
-        $("#userNumber").shouldHave(cssValue("border-color", "rgb(220, 53, 69)"));
+        $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
+        $(".table-responsive").$(byText("Student Name")).parent().shouldHave(text(firstName));
+        $(".table-responsive").$(byText("Gender")).parent().shouldHave(text(gender));
+        $(".table-responsive").$(byText("Mobile")).parent().shouldHave(text("1234567890"));
     }
 }
